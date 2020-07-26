@@ -5,15 +5,12 @@
 최종적으로 RUL 그래프를 그려서 기계의 건전성을 유지한다.  
   
 ## System Model
----
 
 
 ## Dependencies
----
 tessorflow 2.0
 
 ## Dataset
----
 본 데이터는 한국 콘베어 공업에서 제공받은 현장 데이터와 실험실 데이터다.
 
 Dataset Strcture  
@@ -21,7 +18,6 @@ Dataset Strcture
 Dataset Example
 
 ## Result
----
 Anomaly Dectection
 
 HI Graph
