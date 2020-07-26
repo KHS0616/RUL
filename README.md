@@ -27,4 +27,4 @@ Anomaly Dectection
 HI Graph
 
 RUL(Remain Useful Life)  
-![Gear RUL Graph](img/Gear_RUL_Graph.png?raw=true)
+![Gear RUL Graph](img/Gear_RUL_Graph.PNG)
