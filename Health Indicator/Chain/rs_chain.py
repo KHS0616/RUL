@@ -43,7 +43,7 @@ class chain_main_class:
             self.data = self.happy_go_n[:]
             
     # 음성 데이터 불러오기
-    def load_wav_data(self):
+    def load_wav_data(self, wav):
         y, sr = librosa.load(wav, sr=self.Fs)
         self.data = y
     

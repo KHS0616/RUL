@@ -122,7 +122,7 @@ class step_chain:
 
         link_pitch=self.link_pitch*self.link_count
         # 신율 = ((늘어난 길이(mm))/설계치 길이)*100
-        self.elongation_result=((elongation-link_pitch)/link_pitch)*100
+        self.elongation_result=((elongation-link_pitch)/link_pitch)
     
     # 파일 저장
     def save_file(self):
