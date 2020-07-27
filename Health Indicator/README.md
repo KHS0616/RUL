@@ -20,14 +20,14 @@
 ![Gear RUL Graph](../img/RS_SFTP_Before.PNG)![Gear RUL Graph](../img/RS_SFTP_Lab.PNG)     
 (좌 현장, 우 실험실)  
 해당 주파수 대역을 제거하기 위해 대역차단필터를 이용한다.   
-![Gear RUL Graph](../img/RS_Spectrum_Before.PNG)![Gear RUL Graph](../img/RS_Spectrum_After.PNG)   
+![Gear RUL Graph](../img/RS_Spectrum_Before.png)![Gear RUL Graph](../img/RS_Spectrum_After.png)   
 주파수의 첨도 그래프를 이용하여 첨도가 높은 주파수 대역을 대상으로 다른 대상보다 비 정상적으로 첨도가 높은 주파수 대역을 선택하여 제거한다. (좌 제거 전, 우 제거 후)
 
 ## AutoCorrelation
 스텝 체인은 구동 체인과 다르게 신호를 추출하는데 많은 어려움이 있다.  
 스텝 체인의 신호를 추출하기 위해 자기상관함수를 이용한다.  
 
-![Gear RUL Graph](../img/ACF.PNG)  
+![Gear RUL Graph](../img/ACF.png)  
 자기상관함수는 임의의 어떤 신호와 그 신호를 임의의 시간만큼 지연시킨 신호 사이의 상관관계를 파악할 수 있는 함수이다.  
 상관관계는 유사성을 의미하는데, 지연 시간에 대해 초기 신호의 성분이 계속해서 지속되고 있다면 ACF는 높은 상관관계를 나타낼 것이다.  
 반대로 초기 신호의 성분이 사라지고 거의 존재하지 않는다면 그 지연 시간에 대한 ACF는 낮은 상관관계를 나타낼 것이다.  
