@@ -1,0 +1,34 @@
+﻿<Page x:Class="WPF_Test.Sensor"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WPF_Test"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Sensor">
+    <Grid Background="WhiteSmoke">
+        <StackPanel HorizontalAlignment="Left" Height="22" VerticalAlignment="Top" Width="800" Orientation="Horizontal" Background="#FF85B65D">
+            <Button x:Name="btn_Sensor_Main" Content="Main" HorizontalAlignment="Left" Margin="100,1,0,0" VerticalAlignment="Top" Width="92" Click="btn_Sensor_Checked"/>
+            <Button x:Name="btn_Sensor_001" Content="1호기" HorizontalAlignment="Left" Margin="30,1,0,0" VerticalAlignment="Top" Width="92" Click="btn_Sensor_Checked"/>
+            <Button x:Name="btn_Sensor_002" Content="2호기" HorizontalAlignment="Left" Margin="30,1,0,0" VerticalAlignment="Top" Width="92" Click="btn_Sensor_Checked"/>
+            <Button x:Name="btn_Sensor_003" Content="3호기" HorizontalAlignment="Left" Margin="30,1,0,0" VerticalAlignment="Top" Width="92" Click="btn_Sensor_Checked"/>
+            <Button x:Name="btn_Sensor_004" Content="4호기" HorizontalAlignment="Left" Margin="30,1,0,0" VerticalAlignment="Top" Width="92" Click="btn_Sensor_Checked"/>
+        </StackPanel>
+        <Label x:Name="lbl_name" Content="1호기" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top" Width="800" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="1" BorderBrush="Black"/>
+        <StackPanel HorizontalAlignment="Left" Height="335" Margin="10,55,0,0" VerticalAlignment="Top" Width="157" Background="#FFF9ECEC">
+            <Label x:Name="lbl_Type" Content="Step" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <StackPanel Height="23" Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="btn_Type_Step" Content="Step" Margin="0,0,50,0" Height="23" VerticalAlignment="Bottom" Click="btn_Change_Type" Width="43"/>
+                <Button x:Name="btn_Type_RS" Content="RS" Click="btn_Change_Type" Width="45"/>
+            </StackPanel>
+            <Button x:Name="btn_Setting_Spec" Content="스펙 설정" Margin="0,10,0,0" Click="btn_Sensor_Checked"/>
+            <Button x:Name="btn_Sin" Content="신율 측정" Margin="0,30,0,0" Click="btn_SendJson"/>
+            <Button x:Name="btn_Raw" Content="Raw Graph" Margin="0,30,0,0" Click="btn_SendJson"/>
+            <Button x:Name="btn_Bandpass" Content="Bandpass Graph" Margin="0,30,0,0" Click="btn_SendJson"/>
+            <Button x:Name="btn_Peak" Content="Find Peak Graph" Margin="0,30,0,0" Click="btn_SendJson"/>
+        </StackPanel>
+        <Image x:Name="img_result" HorizontalAlignment="Left" Height="279" Margin="181,59,0,0" VerticalAlignment="Top" Width="594"/>
+        <Label x:Name="lbl_Sin" Content="0.00" HorizontalAlignment="Left" Margin="181,362,0,0" VerticalAlignment="Top" Width="594" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF060606" Background="{x:Null}" BorderThickness="1"/>
+    </Grid>
+</Page>

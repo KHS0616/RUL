@@ -7,6 +7,7 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import copy
 import librosa
+plt.ioff()
 # 메인 클래스
 # 데이터를 불러오는 것부터 파일 작성까지 기본적으로 제공된 과정
 # 각 중요 기능별로 구간을 나누어 함수화
@@ -19,15 +20,15 @@ class chain_main_class:
         # 디렉토리와 파일 변수 선언
         self.directoryname = "Data"
         self.filename = "C_33_3802-688-9_200421_1415N_D.raw.txt"
-        self.file_full_path = self.directoryname+"/"+ self.filename
+        self.file_full_path = "./Data/rawData/data.txt"#self.directoryname+"/"+ self.filename
         self.out_file_name = self.directoryname+"/"+self.filename[0:30] + "_A.txt"
 
         # 샘플링 주파수, 계산할 체인 링크 개수, pitch 길이 변수 선언, 필터링할 때 쓸 start, end 값
         self.Fs = 50000
         self.link_count = 6
         self.link_pitch = 406.41/3
-        self.start = 0 
-        self.end = 0
+        self.start = 10000 
+        self.end = 14000
         self.filtered = []
 
         # 초당 스텝 1개가 움직인 거리 (링크가 한개이므로 3으로 나눠주면 됨)
@@ -41,6 +42,7 @@ class chain_main_class:
         with open(self.file_full_path, 'r') as file_id:
             self.happy_go_n = np.loadtxt(file_id, delimiter=',', dtype='float32')
             self.data = self.happy_go_n[:]
+            self.raw_data = self.happy_go_n[:]
             
     # 음성 데이터 불러오기
     def load_wav_data(self, wav):
@@ -87,15 +89,36 @@ class chain_main_class:
 
     #밴드 패스 출력
     def print_bandpass(self):
+        plt.clf()
         sos = signal.butter(5, [self.start, self.end], "bp", fs=self.Fs, output="sos")
         filtered = signal.sosfilt(sos, self.iot7_BP)
         plt.plot(filtered)
-
+        plt.title('Band Pass')
+        plt.xlabel('Raw count')
+        plt.ylabel('Signal Value')
+        plt.savefig('rs_bandpass.png')
+    #원본데이터 출력    
     def print_row(self):
-        plt.plot(self.iot7_BP)
-
-
-
+        plt.clf()
+        plt.plot(self.raw_data)
+        plt.title('Raw Data')
+        plt.xlabel('Raw count')
+        plt.ylabel('Signal Value')
+        plt.savefig('rs_raw.png')
+    #피크 출력    
+    def print_peak(self):
+        self.auto_bandstop(self.filtered,self.Fs)
+        self.peak_plot()
+    #신율 출력
+    def print_sin(self):
+        self.move_graph()
+        self.X_trans_time()
+        self.peak_interval()
+        self.math()
+        self.sin_length()
+        self.cal_sin()
+        print('신율: ',self.elongation_result[0]/100,'%')
+        
     # 최소 분산을 구하는 함수
     # interval 값은 기본 6으로 설정, 변경 가능
     # peak_num은 기본 -1로 설정되어 최소 분산을 구한다.
@@ -121,44 +144,35 @@ class chain_main_class:
 
         # 분산과 피크 값의 인덱스를 반환
         return min_variance, peak_num 
-
+    
+    #자동으로 밴드패스 값 찾아주는 함수
     @staticmethod
     def auto_bandpass(self,start, end, fs, interval = 6):
+        self.start = start
+        self.end = end
         self.Fs = fs
         outer_iterval = 10
         variances = []
-        variances2 = []
         row_data = self.iot7_BP
-        row_data2 = self.data
-        for i in range(0, (end-start)//2, outer_iterval):
-            filter_data = self.bandpass(row_data, start + i, end - i, self.Fs)
-            self.data = filter_data
-            self.move_graph()
-            self.find_peaks()
-            min_variance, peak_num = self.cal_minVar(self.locs, interval)
-            variances.append(min_variance)
-
-        for i in range(0,(end-start), outer_iterval):
-            filter_data = self.bandpass(row_data, start + i, start + i + outer_iterval, self.Fs)
-            self.data = filter_data
-            self.move_graph()
-            self.find_peaks()
-            min_variance, peak_num = self.cal_minVar(self.locs, interval)
-            variances2.append(min_variance)
-
-        self.data = row_data2
-        self.iot7_BP = row_data
-
-        if min(variances) > min(variances2):
-            self.start =  start+((variances.index(min(variances))*interval))
-            self.end =  end-((variances.index(min(variances))*interval))
-        else :
-            self.start =  start+((variances2.index(min(variances2))*interval)) 
-            self.end = end-((variances2.index(min(variances2))*interval))
-
-        filtered = self.bandpass(row_data,self.start,self.end,self.Fs)
-        self.auto_bandstop(filtered,self.Fs)
-
+        
+        # 첫 번째 i는 start를 10씩 이동시켜줄 반복문 즉 10010, 10020 이렇게 10씩 증가하면서 한번 10씩 증가할 때마다 
+        # end는 뒤에서부터 10씩 내려온다 즉 10010일때 end( J 반복문)는 13090, 13080 이런식으로 10씩 내려오면서 start + i지점까지의 분산 값을 저장한다.
+        for i in range(0, (end-start)//10, outer_iterval):
+            for j in range(0,(end-start+i+10)//10, outer_iterval):
+                self.data = self.bandpass(row_data, start+i, end - j , self.Fs)
+                self.move_graph()
+                self.find_peaks()
+                min_variance, peak_num = self.cal_minVar(self.locs, interval)
+                variances.append(min_variance)
+                
+        #얻은 분산 값 중에 가장 작은 값에 해당되는 범위를 start와 end에 넣어준다.
+        self.start =  start+((variances.index(min(variances))))
+        self.end =  end-((variances.index(min(variances))))
+        
+        #최종적으로 밴드패스를 적용한다.
+        self.filtered = self.bandpass(self.iot7_BP,self.start,self.end,self.Fs)
+        self.auto_bandstop(self.filtered,self.Fs)
+        
     def peak_plot(self):
         peak = signal.find_peaks(self.result,distance=(self.link_pitch/self.chain_velocity)*self.Fs)
         k = []
@@ -189,8 +203,13 @@ class chain_main_class:
         noStop_k = list(filter(lambda x:x !=-1 , temp_k))
 
         # 그래프 출력
+        plt.clf()
+        plt.title('Peak Plot')
+        plt.xlabel('Raw count')
+        plt.ylabel('Signal Value')
         plt.plot(self.result)
         plt.plot(noStop_locs, noStop_k,'x')
+        plt.savefig('rs_peak.png')
         return noStop_locs, noStop_k
 
     def bandstop(self,data,start,end,fs):
@@ -224,7 +243,7 @@ class chain_main_class:
         
         # 얻은 X범위를 +- 10으로 밴드스탑필터를 사용해준다.
         self.result = self.bandstop(data,f[x_index[0][0]]-interval,f[x_index[0][0]]+interval,fs)
-        self.peak_plot()
+        #self.peak_plot()
 
     # 몰라도 되는 과정
     def math(self):
@@ -290,8 +309,3 @@ class chain_main_class:
         else:
             fid.write(str(self.elongation_result))
         fid.close()
-    
-
-if __name__ == "__main__":
-    chain_main_class().main()
-
