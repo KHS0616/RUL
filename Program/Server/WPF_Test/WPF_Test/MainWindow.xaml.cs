@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using WPF_Test.Properties;
+using ConsoleLib;
 
 namespace WPF_Test
 {
@@ -94,9 +96,7 @@ namespace WPF_Test
 
         // 화면 전환 이벤트
         private void btnSensor001_Click(object sender, RoutedEventArgs e)
-        {
-            
-            
+        {            
             switch (sender.ToString().Substring(32))
             {
                 case "계양역":
@@ -105,10 +105,67 @@ namespace WPF_Test
                     sensor001.Show();
                     break;
                 default:
-                    Mobius.GetProductAsync("Hello-Mobius/inhatc-pi/Gateway");
+                    NodeSqlFormatter("");
                     break;
             }
             
+        }
+
+        // NodeJS 실행 메소드
+        // 모비우스 서버 실행을 위한 메소드
+        private string NodeSqlFormatter(string sourceText)
+        {
+            ProcessStartInfo cmd = new ProcessStartInfo();
+            Process process = new Process();
+
+            cmd.FileName = @"cmd";  // cmd 창 실행
+            cmd.WindowStyle = ProcessWindowStyle.Hidden; //cmd 창 숨기기
+            cmd.CreateNoWindow = false;      //cmd 창 띄우지 않기
+            cmd.UseShellExecute = false;   // Shell 기능 미사용
+            cmd.RedirectStandardInput = true;  // cmd 창에서 데이터를 가져오기
+            cmd.RedirectStandardOutput = true; // cmd 창으로 데이터 보내기
+            cmd.RedirectStandardError = true; //cmd 창에서 오류 내용 가져오기
+
+            process.StartInfo = cmd;
+            process.EnableRaisingEvents = false;   // 종료 이벤트 알리지 않기
+            process.Start();
+            process.StandardInput.Write(@"cd ../../Mobius-master" + Environment.NewLine);
+            process.StandardInput.Write(@"node mobius.js" + Environment.NewLine);
+            //process.StandardInput.Write(@"ipconfig" + Environment.NewLine);
+            process.StandardInput.Close();
+            StreamReader reader = process.StandardOutput;
+            string s = reader.ReadToEnd();
+            s = s.Replace("\n", "\r\n");
+            MessageBox.Show(s);
+            //process.WaitForExit();
+            //process.Close();
+            //process.Close();
+            /*            Process p = new Process();
+
+                        // 경로 구분자 설정
+                        string path = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+
+                        string s = "";
+
+                        p.StartInfo.UseShellExecute = false;
+                        p.StartInfo.RedirectStandardInput = true;
+                        p.StartInfo.RedirectStandardOutput = true;
+                        p.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                        p.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                        p.StartInfo.CreateNoWindow = false;
+
+                        p.StartInfo.FileName = string.Format("C:\\Program Files\\nodejs\\node.exe");
+
+                        p.StartInfo.Arguments = string.Format(@"{0}\Mobius-master\mobius.js", path);
+                        p.Start();
+
+                        StreamReader reader = p.StandardOutput;
+                        StreamWriter writer = p.StandardInput;
+                        writer.AutoFlush = true;
+                        s = reader.ReadToEnd();
+                        s = s.Replace("\n", "\r\n");*/
+
+            return "";
         }
     }
 }

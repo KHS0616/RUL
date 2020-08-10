@@ -1,0 +1,18 @@
+﻿<Window x:Class="RUL_Program.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RUL_Program"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TextBox x:Name="txtIP" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="628"/>
+        <Button x:Name="btnStartServer" Content="서버 시작" HorizontalAlignment="Left" Margin="654,11,0,0" VerticalAlignment="Top" Width="127" Click="btnStartServer_Click"/>
+        <Label x:Name="lblServerComment" Content="서버가 연결되어 있지 않습니다." HorizontalAlignment="Left" Height="26" Margin="10,38,0,0" VerticalAlignment="Top" Width="628" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label x:Name="lblServerLog" Content="" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Height="340" Width="628" BorderBrush="#FF020202" Padding="5" BorderThickness="1"/>
+        <Button x:Name="btnConnectGyeyang" Content="계양역" HorizontalAlignment="Left" Margin="654,69,0,0" VerticalAlignment="Top" Width="127" Click="btnConnect_Click"/>
+        <Button x:Name="btnEndServer" Content="서버 종료" HorizontalAlignment="Left" Margin="654,38,0,0" VerticalAlignment="Top" Width="127" Click="btnEndServer_Click"/>
+
+    </Grid>
+</Window>

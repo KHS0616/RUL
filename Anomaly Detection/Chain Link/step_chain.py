@@ -4,11 +4,14 @@ import math
 from scipy import signal
 import matplotlib.pyplot as plt
 import librosa
+import sinMic as mic
+import wavTotxt as wavetxt
 plt.ioff() 
 class step_chain:
     # 클래스 초기화
     def __init__(self):
         # 디렉토리와 파일 변수 선언
+        self.title = "계양역 1호기"
         self.directoryname = "Data"
         self.filename = "C_33_3802-688-9_200421_1415N_D.raw.txt"
         self.file_full_path = "./Data/rawData/data.txt"#self.directoryname+"/"+ self.filename
@@ -145,23 +148,23 @@ class step_chain:
 
     # 그래프를 이용한 시각화
     def show_graph(self, mode = "autocorrelate"):
-        if mode == "row":
+        if mode == "raw":
             plt.clf()
             plt.plot(self.iot7_BP)
-            plt.savefig('GG.png')
+            plt.savefig("{} raw.png".format(self.title))
         elif mode == "bandpass":
             plt.clf()
             plt.plot(self.filtered) 
-            plt.savefig('GG.png')
+            plt.savefig("{} bandpass.png".format(self.title))
         elif mode == "autocorrelate":
             plt.plot(self.correlate_result)
             fig = plt.gcf()
-            fig.savefig('GG.png')
+            fig.savefig("{} acf.png".format(self.title))
         elif mode == "peak":
             plt.clf()
             plt.plot(self.correlate_result)
             plt.plot(self.row_X, self.k, "x") 
-            plt.savefig('GG.png')
+            plt.savefig("{} peak.png".format(self.title))
         else:
             print("mode typing error!")
         #plt.show()
@@ -179,3 +182,20 @@ class step_chain:
         self.sin_length()
         self.cal_sin()
         self.save_file()
+
+    # 측정된 신율을 서버로 전송
+    def sendSin(self):
+        clt_data = OrderedDict()
+        clt_data["Type"] = "Step"
+        clt_data['Name'] = self.title
+        clt_data['Content'] = "Sin"
+        clt_data['Data'] = self.elongation_result
+        clt_data['Time'] = "dsads"
+        clt_data['Comment'] = "{} 신율이 측정되었습니다.".format(self.title)
+
+# 메인 함수로 실행될 경우
+if __name__ == "__main__":
+    chain = step_chain()
+    mic.c_mic()
+    wavetxt.wave_to_txt()
+    chain.Start()

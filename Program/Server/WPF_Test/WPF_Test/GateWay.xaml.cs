@@ -26,7 +26,6 @@ namespace WPF_Test
 
         // 게이트웨이 정보
         public string gateWayName = "";
-
         public GateWay(string namee)
         {
             InitializeComponent();
