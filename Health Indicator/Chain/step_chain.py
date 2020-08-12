@@ -4,6 +4,9 @@ import math
 from scipy import signal
 import matplotlib.pyplot as plt
 import librosa
+import json
+from collections import OrderedDict
+import paho.mqtt.client as mqtt
 
 class step_chain:
     # 클래스 초기화
@@ -149,27 +152,47 @@ class step_chain:
             plt.plot(self.iot7_BP)
             fig = plt.gcf()
             plt.show()
-            fig.savefig('GG.png')
+            fig.savefig('StepRaw.png')
         elif mode == "bandpass":
             plt.plot(self.filtered)
             fig = plt.gcf() 
             plt.show()
-            fig.savefig('GG.png')
+            fig.savefig('StepBandpass.png')
         elif mode == "autocorrelate":
             plt.plot(self.correlate_result)
             fig = plt.gcf()
             plt.show()
-            fig.savefig('GG.png')
+            fig.savefig('StepACF.png')
         elif mode == "peak":
             plt.plot(self.filtered)
             plt.plot(self.locs, self.k, "x")
             plt.show()
-            fig = plt.gcf()
-            
-            fig.savefig('GG.png')
+            fig = plt.gcf()            
+            fig.savefig('StepPeak.png')
         else:
             print("mode typing error!")
         plt.show()
+
+    # MQTT를 통한 데이터 전송
+    def send_data(self):
+        broker_address="192.168.219.192"
+        client = mqtt.Client("Gyeyang001")
+        client.connect(broker_address)
+
+        # json 데이터 생성
+        clt_data = OrderedDict()
+        clt_data['Type'] = "Step"
+        clt_data['Name'] = "계양역 1호기"
+        clt_data['Content'] = data['Content']
+        clt_data['Time'] = ""
+        clt_data['Comment'] = "계양역 1호기 신율 계산 결과 수신"
+        clt_data['Data'] = self.elongation_result
+
+        # json을 스트링으로 바꾼다.
+        jsonString = json.dumps(clt_data)
+
+        # json 데이터 전송
+        client.publish("Mobius/Gyeyang", jsonString.encode())
 
     # 실행 함수(경로 자동 설정)
     def Start(self):
@@ -184,3 +207,8 @@ class step_chain:
         self.sin_length()
         self.cal_sin()
         self.save_file()
+        self.send_data()
+
+if __name__ == "__main__":
+    chain = step_chain()
+    chain.Start()
