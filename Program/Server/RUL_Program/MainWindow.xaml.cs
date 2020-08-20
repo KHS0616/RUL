@@ -49,8 +49,14 @@ namespace RUL_Program
             // 새 창에서 게이트웨이 관련 창 열기
             Window window = Server.gateWays[index];
             window.Show();
-            Server.SubscribeMqttTopic("vds1/data");
+            Server.SubscribeMqttTopic("Mobius/Gyeyang");
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Server.ConnectMqttServer("192.168.0.10");
+/*            Server.CreateClient();
+            Server.PostProduct("1");*/
+        }
     }
 }

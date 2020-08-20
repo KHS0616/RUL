@@ -19,7 +19,7 @@ from step_chain import step_chain
 plt.ioff() 
 
 # 마이크 관련 모듈
-import testmic2 as mic
+import testmic as mic
 import testwavtxt as wavetxt
 
 # 녹음 시간

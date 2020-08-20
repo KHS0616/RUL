@@ -8,13 +8,17 @@ import json
 from collections import OrderedDict
 import paho.mqtt.client as mqtt
 
+# 마이크 관련 모듈
+import testmic as mic
+import testwavtxt as wavetxt
+
 class step_chain:
     # 클래스 초기화
     def __init__(self):
         # 디렉토리와 파일 변수 선언
         self.directoryname = "Data"
         self.filename = "C_33_3802-688-9_200421_1415N_D.raw.txt"
-        self.file_full_path = self.directoryname+"/"+ self.filename
+        self.file_full_path = "./Data/rawData/data.txt"#self.directoryname+"/"+ self.filename
         self.out_file_name = self.directoryname+"/"+self.filename[0:30] + "_A.txt"
 
         # 샘플링 주파수, 계산할 체인 링크 개수, pitch 길이 변수 선언
@@ -147,31 +151,28 @@ class step_chain:
         fid.close()
 
     # 그래프를 이용한 시각화
-    def show_graph(self, mode = "autocorrelate"):
-        if mode == "row":
-            plt.plot(self.iot7_BP)
-            fig = plt.gcf()
-            plt.show()
-            fig.savefig('StepRaw.png')
-        elif mode == "bandpass":
-            plt.plot(self.filtered)
-            fig = plt.gcf() 
-            plt.show()
-            fig.savefig('StepBandpass.png')
-        elif mode == "autocorrelate":
-            plt.plot(self.correlate_result)
-            fig = plt.gcf()
-            plt.show()
-            fig.savefig('StepACF.png')
-        elif mode == "peak":
-            plt.plot(self.filtered)
-            plt.plot(self.locs, self.k, "x")
-            plt.show()
-            fig = plt.gcf()            
-            fig.savefig('StepPeak.png')
-        else:
-            print("mode typing error!")
+    def show_graph(self):
+        plt.plot(self.iot7_BP)
+        fig = plt.gcf()
         plt.show()
+        fig.savefig('./Data/Image/StepRaw.png')
+        plt.close()
+        plt.plot(self.filtered)
+        fig = plt.gcf() 
+        plt.show()
+        fig.savefig('./Data/Image/StepBandpass.png')
+        plt.close()
+        plt.plot(self.correlate_result)
+        fig = plt.gcf()
+        plt.show()
+        fig.savefig('./Data/Image/StepACF.png')
+        plt.close()
+        plt.plot(self.correlate_result)
+        plt.plot(self.row_X, self.k, "x")
+        plt.show()
+        fig = plt.gcf()            
+        fig.savefig('./Data/Image/StepPeak.png')
+        plt.close()
 
     # MQTT를 통한 데이터 전송
     def send_data(self):
@@ -183,7 +184,7 @@ class step_chain:
         clt_data = OrderedDict()
         clt_data['Type'] = "Step"
         clt_data['Name'] = "계양역 1호기"
-        clt_data['Content'] = data['Content']
+        clt_data['Content'] = "Sin"
         clt_data['Time'] = ""
         clt_data['Comment'] = "계양역 1호기 신율 계산 결과 수신"
         clt_data['Data'] = self.elongation_result
@@ -196,6 +197,8 @@ class step_chain:
 
     # 실행 함수(경로 자동 설정)
     def Start(self):
+        mic.c_mic()
+        wavetxt.wave_to_txt()
         self.load_data()
         self.move_graph()
         self.X_trans_time()
@@ -207,6 +210,7 @@ class step_chain:
         self.sin_length()
         self.cal_sin()
         self.save_file()
+        self.show_graph()
         self.send_data()
 
 if __name__ == "__main__":

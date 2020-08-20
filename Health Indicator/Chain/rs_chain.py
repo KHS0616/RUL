@@ -7,6 +7,9 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import copy
 import librosa
+import json
+from collections import OrderedDict
+import paho.mqtt.client as mqtt
 plt.ioff()
 # 메인 클래스
 # 데이터를 불러오는 것부터 파일 작성까지 기본적으로 제공된 과정
@@ -20,7 +23,7 @@ class chain_main_class:
         # 디렉토리와 파일 변수 선언
         self.directoryname = "Data"
         self.filename = "C_33_3802-688-9_200421_1415N_D.raw.txt"
-        self.file_full_path = "./Data/rawData/data.txt"#self.directoryname+"/"+ self.filename
+        self.file_full_path = self.directoryname+"/"+ self.filename
         self.out_file_name = self.directoryname+"/"+self.filename[0:30] + "_A.txt"
 
         # 샘플링 주파수, 계산할 체인 링크 개수, pitch 길이 변수 선언, 필터링할 때 쓸 start, end 값
@@ -31,6 +34,8 @@ class chain_main_class:
         self.end = 14000
         self.filtered = []
 
+        #신율 저장할 변수
+        self.elongation = 0.0
         # 초당 스텝 1개가 움직인 거리 (링크가 한개이므로 3으로 나눠주면 됨)
         self.chain_velocity = 421.2/3
 
@@ -96,7 +101,7 @@ class chain_main_class:
         plt.title('Band Pass')
         plt.xlabel('Raw count')
         plt.ylabel('Signal Value')
-        plt.savefig('rs_bandpass.png')
+        plt.savefig('./Data/Image/RSBandpass.png')
     #원본데이터 출력    
     def print_row(self):
         plt.clf()
@@ -104,7 +109,7 @@ class chain_main_class:
         plt.title('Raw Data')
         plt.xlabel('Raw count')
         plt.ylabel('Signal Value')
-        plt.savefig('rs_raw.png')
+        plt.savefig('./Data/Image/RSRaw.png')
     #피크 출력    
     def print_peak(self):
         self.auto_bandstop(self.filtered,self.Fs)
@@ -119,6 +124,51 @@ class chain_main_class:
         self.cal_sin()
         print('신율: ',self.elongation_result[0]/100,'%')
         
+
+
+    def start_RS(self):
+        print("데이터로드...\n")
+        self.load_data()
+        print("영점이동...\n")
+        self.move_graph()
+        self.X_trans_time()
+        print("AutoBandPass...\n")
+        self.auto_bandpass(self,10000,14000,50000)
+        self.print_bandpass()
+        print("AutoBandStop....\n")
+        self.auto_bandstop(self.filtered,50000)
+        self.peak_plot()
+        self.print_row()
+        self.peak_interval()
+        self.math()
+        self.sin_length()
+        self.cal_sin()
+        self.elongation = self.elongation_result[0]/100
+
+    def send_RS(self):
+        
+        #MQTT 접속
+        broker_address="192.168.0.10"
+        client = mqtt.Client("Gyeyang001")
+        client.connect(broker_address)
+        #json 파일 생성
+        clt_data = OrderedDict()
+        clt_data['Type'] = "RS"
+        clt_data['Name'] = "계양역 1호기"
+        clt_data['Content'] = "Sin"
+        clt_data['Time'] = ""
+        clt_data['Comment'] = "계양역 1호기 신율 수신"
+        clt_data['Data'] = self.elongation
+
+        # json을 스트링으로 바꾼다.
+        jsonString = json.dumps(clt_data)
+
+
+        # json 데이터 전송
+        client.publish("Mobius/Gyeyang", jsonString.encode())
+
+
+
     # 최소 분산을 구하는 함수
     # interval 값은 기본 6으로 설정, 변경 가능
     # peak_num은 기본 -1로 설정되어 최소 분산을 구한다.
@@ -209,7 +259,7 @@ class chain_main_class:
         plt.ylabel('Signal Value')
         plt.plot(self.result)
         plt.plot(noStop_locs, noStop_k,'x')
-        plt.savefig('rs_peak.png')
+        plt.savefig('./Data/Image/rs_peak.png')
         return noStop_locs, noStop_k
 
     def bandstop(self,data,start,end,fs):

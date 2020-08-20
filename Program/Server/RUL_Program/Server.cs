@@ -242,7 +242,8 @@ namespace RUL_Program
             {
                 switch (content)
                 {
-                    case "String":
+                    case "Result":
+                        MessageBox.Show(data);
 /*                        Mobius.PostProduct(data);
                         if (!comment.Split()[2].Equals("Normal"))
                         {
