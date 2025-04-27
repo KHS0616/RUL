@@ -11,11 +11,8 @@
 tessorflow 2.0
 
 ## Dataset
-본 데이터는 한국 콘베어 공업에서 제공받은 현장 데이터와 실험실 데이터다.
-
-Dataset Strcture  
-
-Dataset Example
+체인 소음 데이터
+체인 수명 데이터
 
 ## Result
 Anomaly Dectection
